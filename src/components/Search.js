@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 import './style.css';
+import WeatherDetails from './WeatherDetails';
 
 function Search() {
 	const [searchCity, setSearchCity] = useState('');
@@ -14,19 +15,22 @@ function Search() {
 	};
 
 	return (
-		<div className='wrap'>
-			<div className='search'>
-				<input
-					type='search'
-					placeholder='Search City '
-					id='search'
-					onChange={changeHandler}
-					value={searchCity}></input>
+		<>
+			<div className='wrap'>
+				<div className='search'>
+					<input
+						type='search'
+						placeholder='Search City '
+						id='search'
+						onChange={changeHandler}
+						value={searchCity}></input>
+				</div>
+				<button className='searchButton' onClick={submitHandler}>
+					Search
+				</button>
 			</div>
-			<button className='searchButton' onClick={submitHandler}>
-				Search
-			</button>
-		</div>
+			<WeatherDetails />
+		</>
 	);
 }
 
