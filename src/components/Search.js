@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import './style.css';
 import WeatherDetails from './WeatherDetails';
@@ -6,13 +6,45 @@ import WeatherDetails from './WeatherDetails';
 function Search() {
 	const [searchCity, setSearchCity] = useState('');
 
+	const [tempInfo, setTempInfo] = useState({});
+
 	const changeHandler = (event) => setSearchCity(event.target.value);
 
-	const submitHandler = (event) => {
-		event.preventDefault();
+	const getWeatherInfo = useCallback(async () => {
+		try {
+			let url = `https://api.openweathermap.org/data/2.5/weather?q=${searchCity}&units=metric&appid=c6e85c3d87c3b6bedf140004e566c763`;
 
-		setSearchCity('');
-	};
+			let res = await fetch(url);
+			let data = await res.json();
+
+			const { temp, humidity, pressure } = data.main;
+			const { main: weatherType } = data.weather[0];
+			const { name } = data;
+			const { speed } = data.wind;
+			const { country, sunset } = data.sys;
+
+			const myNewWeatherInfo = {
+				temp,
+				humidity,
+				pressure,
+				weatherType,
+				name,
+				speed,
+				country,
+				sunset,
+			};
+
+			setTempInfo(myNewWeatherInfo);
+
+			// console.log(data);
+		} catch (error) {
+			console.log(error);
+		}
+	}, [searchCity]);
+
+	useEffect(() => {
+		getWeatherInfo();
+	}, [getWeatherInfo, searchCity]);
 
 	return (
 		<>
@@ -25,11 +57,11 @@ function Search() {
 						onChange={changeHandler}
 						value={searchCity}></input>
 				</div>
-				<button className='searchButton' onClick={submitHandler}>
+				<button className='searchButton' onClick={getWeatherInfo}>
 					Search
 				</button>
 			</div>
-			<WeatherDetails />
+			<WeatherDetails {...tempInfo} />
 		</>
 	);
 }
